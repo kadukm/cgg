@@ -1,2 +1,2 @@
 ## First task
-**f(x) = ax + by + c*(x - y)^2**
+**ax + by + c*(x - y)^2 = 0**
