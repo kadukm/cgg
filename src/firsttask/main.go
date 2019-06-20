@@ -115,7 +115,7 @@ func drawAxes(gc *gg.Context) {
 		yDownStr := fmt.Sprintf("%.1f", -y)
 		yyDown := cartesianYToScreen(-y)
 		gc.DrawLine(float64(xx0-notchLength), float64(yyDown), float64(xx0+notchLength), float64(yyDown))
-		gc.DrawStringAnchored(yDownStr, float64(xx0), float64(yyDown), 1, 0.5)
+		gc.DrawStringAnchored(yDownStr, float64(xx0+notchLength), float64(yyDown), 0, 0.5)
 	}
 
 	gc.Stroke()
