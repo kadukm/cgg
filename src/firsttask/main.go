@@ -19,12 +19,12 @@ const (
 	fileName = "firsttask.png"
 )
 
+var (
+	yMin, yMax float64
+)
+
 func f(x float64) float64 {
 	return math.Sin(x) * x
-}
-
-func cartesianToScreen() (int, int) {
-	return 0, 0
 }
 
 func main() {
@@ -36,11 +36,18 @@ func main() {
 	gc.SetLineWidth(1)
 	gc.BeginPath()
 
-	yMin := f(a)
-	yMax := yMin
+	findMinMax()
+	drawF(gc)
+
+	draw2dimg.SaveToPngFile(fileName, img)
+}
+
+func findMinMax() {
+	yMin = f(a)
+	yMax = yMin
 
 	for xx := 0; xx <= width; xx++ {
-		x := a + float64(xx)*(b-a)/width
+		x := screenXXToCartesian(xx)
 		y := f(x)
 		if y < yMin {
 			yMin = y
@@ -49,19 +56,21 @@ func main() {
 			yMax = y
 		}
 	}
+}
 
-	yyFloat := (f(a) - yMax) * height / (yMin - yMax)
-	gc.MoveTo(0, yyFloat)
+func drawF(gc *draw2dimg.GraphicContext) {
+	yy := cartesianYToScreen(f(a))
+	gc.MoveTo(0, float64(yy))
 
 	for xx := 1; xx <= width; xx++ {
 		x := a + float64(xx)*(b-a)/width
 		y := f(x)
-		yyFloat = (y - yMax) * height / (yMin - yMax)
-		yy := int(yyFloat)
+		yy = cartesianYToScreen(y)
 		gc.LineTo(float64(xx), float64(yy))
 	}
 
 	gc.Stroke()
+}
+func drawAxes(gc *draw2dimg.GraphicContext) {
 
-	draw2dimg.SaveToPngFile(fileName, img)
 }
