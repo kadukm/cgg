@@ -1,6 +1,9 @@
 # CGG
 Tasks for the university course of computer geometry and graphics
 
-## TODO
-- [ ] Add README for firsttask
-- [ ] Add temp filename in utility package and use it tasks
+## Tasks
+- [x] [First task](src/firsttask)
+- [ ] [Second task]()
+- [ ] [Third task]()
+- [ ] [Fourth task]()
+- [ ] [Fifth task]()
