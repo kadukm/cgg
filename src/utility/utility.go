@@ -17,6 +17,7 @@ type IntTuple struct {
 	A, B int
 }
 
+//Fill fills img with color c
 func Fill(img draw.Image, c color.Color) {
 	for xx := img.Bounds().Min.X; xx <= img.Bounds().Max.X; xx++ {
 		for yy := img.Bounds().Min.Y; yy < img.Bounds().Max.Y; yy++ {
@@ -25,14 +26,16 @@ func Fill(img draw.Image, c color.Color) {
 	}
 }
 
-func DrawHorizontalLine(img draw.Image, yy0 int, c color.Color) {
-	for xx := img.Bounds().Min.X; xx <= img.Bounds().Max.X; xx++ {
+//DrawHorizontalLine draws line from (xxStart, yy0) to (xxEnd, yy0)
+func DrawHorizontalLine(img draw.Image, yy0, xxStart, xxEnd int, c color.Color) {
+	for xx := xxStart; xx <= xxEnd; xx++ {
 		img.Set(xx, yy0, c)
 	}
 }
 
-func DrawVerticalLine(img draw.Image, xx0 int, c color.Color) {
-	for yy := img.Bounds().Min.Y; yy < img.Bounds().Max.Y; yy++ {
+//DrawVerticalLine draws line from (xx0, yyStart) to (xx0, yyEnd)
+func DrawVerticalLine(img draw.Image, xx0, yyStart, yyEnd int, c color.Color) {
+	for yy := yyStart; yy < yyEnd; yy++ {
 		img.Set(xx0, yy, c)
 	}
 }

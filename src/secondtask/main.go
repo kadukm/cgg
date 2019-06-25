@@ -4,6 +4,7 @@ import (
 	"image"
 	"image/color"
 	"image/draw"
+	"math"
 
 	"github.com/kadukm/cgg/src/utility"
 )
@@ -19,8 +20,7 @@ const (
 	width  = 1000
 	height = 600
 
-	minXXAxeStepLength int = 32
-	minYYAxeStepLength int = 32
+	xAxeStepLength, yAxeStepLength float64 = 1, 1
 
 	notchLength int = 5
 
@@ -43,8 +43,8 @@ func main() {
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 	utility.Fill(img, color.White)
 
-	drawF(img)
 	drawAxes(img)
+	drawF(img)
 
 	utility.SavePNG(img, filename)
 }
@@ -76,6 +76,22 @@ func drawAxes(img draw.Image) {
 
 	zeroPoint := pointFromCartesian(0, 0)
 
-	utility.DrawVerticalLine(img, zeroPoint.xx, drawingColor)
-	utility.DrawHorizontalLine(img, zeroPoint.yy, drawingColor)
+	utility.DrawVerticalLine(img, zeroPoint.xx, 0, height, drawingColor)
+	utility.DrawHorizontalLine(img, zeroPoint.yy, 0, width, drawingColor)
+
+	for x := xAxeStepLength; x < math.Max(math.Abs(xMin), math.Abs(xMax)); x += xAxeStepLength {
+		xxRight := cartesianXToScreen(x)
+		utility.DrawVerticalLine(img, xxRight, zeroPoint.yy-notchLength, zeroPoint.yy+notchLength, drawingColor)
+
+		xxLeft := cartesianXToScreen(-x)
+		utility.DrawVerticalLine(img, xxLeft, zeroPoint.yy-notchLength, zeroPoint.yy+notchLength, drawingColor)
+	}
+
+	for y := yAxeStepLength; y < math.Max(math.Abs(yMin), math.Abs(yMax)); y += yAxeStepLength {
+		yyUp := cartesianYToScreen(y)
+		utility.DrawHorizontalLine(img, yyUp, zeroPoint.xx-notchLength, zeroPoint.xx+notchLength, drawingColor)
+
+		yyDown := cartesianYToScreen(-y)
+		utility.DrawHorizontalLine(img, yyDown, zeroPoint.xx-notchLength, zeroPoint.xx+notchLength, drawingColor)
+	}
 }
