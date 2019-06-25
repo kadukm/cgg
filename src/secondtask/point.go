@@ -1,5 +1,7 @@
 package main
 
+import "github.com/kadukm/cgg/src/utility"
+
 // These values allow transfrom points without redundant recount
 const (
 	t1 float64 = b * b / (4 * c * (a + b))
@@ -12,25 +14,25 @@ type point struct {
 	xx, yy int
 }
 
-func pointFromTransformed(u, v float64) point {
+func pointFromTransformed(fg utility.FunctionGraph, u, v float64) point {
 	x, y := -u+t1, v-u+t1-t2
-	xx, yy := cartesianXToScreen(x), cartesianYToScreen(y)
+	xx, yy := fg.CartesianXToScreen(x), fg.CartesianYToScreen(y)
 	return point{x, y, u, v, xx, yy}
 }
 
-func pointFromCartesian(x, y float64) point {
+func pointFromCartesian(fg utility.FunctionGraph, x, y float64) point {
 	u, v := -x+t1, y-x+t2
-	xx, yy := cartesianXToScreen(x), cartesianYToScreen(y)
+	xx, yy := fg.CartesianXToScreen(x), fg.CartesianYToScreen(y)
 	return point{x, y, u, v, xx, yy}
 }
 
-func pointFromScreen(xx, yy int) point {
-	x, y := screenXXToCartesian(xx), screenYYToCartesian(yy)
+func pointFromScreen(fg utility.FunctionGraph, xx, yy int) point {
+	x, y := fg.ScreenXXToCartesian(xx), fg.ScreenYYToCartesian(yy)
 	u, v := -x+t1, y-x+t2
 	return point{x, y, u, v, xx, yy}
 }
 
-func (p *point) ScreenNeighbors() (neighbors [8]point) {
+func (p *point) ScreenNeighbors(fg utility.FunctionGraph) (neighbors [8]point) {
 	deltas := []struct{ dxx, dyy int }{
 		{-1, -1}, {0, -1}, {1, -1},
 		{-1, 0}, {1, 0},
@@ -39,7 +41,7 @@ func (p *point) ScreenNeighbors() (neighbors [8]point) {
 	for i, delta := range deltas {
 		newXX := p.xx + delta.dxx
 		newYY := p.yy + delta.dyy
-		neighbor := pointFromScreen(newXX, newYY)
+		neighbor := pointFromScreen(fg, newXX, newYY)
 		neighbors[i] = neighbor
 	}
 	return neighbors

@@ -1,46 +1,36 @@
 package main
 
 import (
-	"image"
 	"math"
 
 	"github.com/kadukm/cgg/src/utility"
 )
 
-func cartesianXToScreen(x float64) int {
-	return int((x - xMin) * width / (xMax - xMin))
+type parabolaOptions struct {
+	p          float64
+	directrixU float64
+	vertex     point
+	focus      point
 }
 
-func cartesianYToScreen(y float64) int {
-	return int((y - yMax) * height / (yMin - yMax))
-}
-
-func screenXXToCartesian(xx int) float64 {
-	return float64(xx)*(xMax-xMin)/width + xMin
-}
-
-func screenYYToCartesian(yy int) float64 {
-	return float64(yy)*(yMin-yMax)/height + yMax
-}
-
-func getErrorSizeFor(p point) float64 {
-	distanceToDirectrixU := math.Abs(p.u - directrixU)
-	distanceToFocus := math.Sqrt(math.Pow(p.u-focus.u, 2) + math.Pow(p.v-focus.v, 2))
+func (po parabolaOptions) getErrorSizeFor(p point) float64 {
+	distanceToDirectrixU := math.Abs(p.u - po.directrixU)
+	distanceToFocus := math.Sqrt(math.Pow(p.u-po.focus.u, 2) + math.Pow(p.v-po.focus.v, 2))
 	return math.Abs(distanceToDirectrixU - distanceToFocus)
 }
 
-func pointInsideImage(img image.Image, p point) bool {
-	return (img.Bounds().Min.X <= p.xx && p.xx <= img.Bounds().Max.X &&
-		img.Bounds().Min.Y <= p.yy && p.yy <= img.Bounds().Max.Y)
-}
-
-func getBestNotUsedPoint(p point, visited map[utility.IntTuple]bool) (res point) {
+func getNearestNotUsedPoint(
+	p point,
+	visited map[utility.Point]bool,
+	fg utility.FunctionGraph,
+	po parabolaOptions,
+) (res point) {
 	minErrorSize := math.MaxFloat64
-	for _, currentPoint := range p.ScreenNeighbors() {
-		if visited[utility.IntTuple{currentPoint.xx, currentPoint.yy}] {
+	for _, currentPoint := range p.ScreenNeighbors(fg) {
+		if visited[utility.Point{currentPoint.xx, currentPoint.yy}] {
 			continue
 		}
-		currentErrorSize := getErrorSizeFor(currentPoint)
+		currentErrorSize := po.getErrorSizeFor(currentPoint)
 		if currentErrorSize < minErrorSize {
 			minErrorSize = currentErrorSize
 			res = currentPoint
