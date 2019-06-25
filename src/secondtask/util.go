@@ -34,39 +34,10 @@ func pointInsideImage(img image.Image, p point) bool {
 		img.Bounds().Min.Y <= p.yy && p.yy <= img.Bounds().Max.Y)
 }
 
-//TODO: DRY
-
 func getBestNotUsedPoint(p point, visited map[utility.IntTuple]bool) (res point) {
 	minErrorSize := math.MaxFloat64
 	for _, currentPoint := range p.ScreenNeighbors() {
 		if visited[utility.IntTuple{currentPoint.xx, currentPoint.yy}] {
-			continue
-		}
-		currentErrorSize := getErrorSizeFor(currentPoint)
-		if currentErrorSize < minErrorSize {
-			minErrorSize = currentErrorSize
-			res = currentPoint
-		}
-	}
-	return
-}
-
-func getBestPoint(p point) (res point) {
-	minErrorSize := math.MaxFloat64
-	for _, currentPoint := range p.ScreenNeighbors() {
-		currentErrorSize := getErrorSizeFor(currentPoint)
-		if currentErrorSize < minErrorSize {
-			minErrorSize = currentErrorSize
-			res = currentPoint
-		}
-	}
-	return
-}
-
-func getBestPointExcluding(p point, excludedPoint point) (res point) {
-	minErrorSize := math.MaxFloat64
-	for _, currentPoint := range p.ScreenNeighbors() {
-		if currentPoint.xx == excludedPoint.xx && currentPoint.yy == excludedPoint.yy {
 			continue
 		}
 		currentErrorSize := getErrorSizeFor(currentPoint)
