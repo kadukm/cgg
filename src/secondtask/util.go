@@ -6,6 +6,8 @@ import (
 	"github.com/kadukm/cgg/src/utility"
 )
 
+//TODO: use parabolaOptions separately from utility.FunctionGraph
+
 type parabolaOptions struct {
 	p          float64
 	directrixU float64
