@@ -8,7 +8,7 @@ import (
 
 //Fill fills img with color c
 func Fill(img draw.Image, c color.Color) {
-	for xx := img.Bounds().Min.X; xx <= img.Bounds().Max.X; xx++ {
+	for xx := img.Bounds().Min.X; xx < img.Bounds().Max.X; xx++ {
 		for yy := img.Bounds().Min.Y; yy < img.Bounds().Max.Y; yy++ {
 			img.Set(xx, yy, c)
 		}
@@ -29,66 +29,67 @@ func DrawVerticalLine(img draw.Image, xx0, yyStart, yyEnd int, c color.Color) {
 	}
 }
 
-//TODO: refactor it
+//DrawLine draws line from (xx1, yy1) to (xx2, yy2). Coordinates can be any
 func DrawLine(img draw.Image, xx1, yy1, xx2, yy2 int, color color.Color) {
 	var dx, dy int
-	var sx, sy int
+	var xxStep, yyStep int
 
 	if xx1 < xx2 {
 		dx = xx2 - xx1
-		sx = 1
+		xxStep = 1
 	} else {
 		dx = xx1 - xx2
-		sx = -1
+		xxStep = -1
 	}
 
 	if yy1 < yy2 {
 		dy = yy2 - yy1
-		sy = 1
+		yyStep = 1
 	} else {
 		dy = yy1 - yy2
-		sy = -1
+		yyStep = -1
 	}
 
 	err := dx - dy
 
-	for {
-		img.Set(xx1, yy1, color)
-		if xx1 == xx2 && yy1 == yy2 {
-			break
-		}
-		e2 := 2 * err
-		if e2 > -dy {
+	img.Set(xx1, yy1, color)
+
+	xx, yy := xx1, yy1
+	for xx != xx2 || yy != yy2 {
+		currentErr := 2 * err
+		if currentErr > -dy {
 			err -= dy
-			xx1 += sx
+			xx += xxStep
 		}
-		if e2 < dx {
+		if currentErr < dx {
 			err += dx
-			yy1 += sy
+			yy += yyStep
 		}
+
+		img.Set(xx, yy, color)
 	}
 }
 
 //DrawAxes draws axes with branches for fg
-func DrawAxes(img draw.Image, fg FunctionGraph, color color.Color) {
+func DrawAxes(img draw.Image, fg FunctionGraph, c color.Color) {
 	xx0, yy0 := fg.CartesianXToScreen(0), fg.CartesianYToScreen(0)
 
-	DrawVerticalLine(img, xx0, 0, fg.Height, color)
-	DrawHorizontalLine(img, yy0, 0, fg.Width, color)
+	DrawVerticalLine(img, xx0, 0, fg.Height, c)
+	DrawHorizontalLine(img, yy0, 0, fg.Width, c)
 
 	for x := fg.XAxeStepLength; x < math.Max(math.Abs(fg.XMin), math.Abs(fg.XMax)); x += fg.XAxeStepLength {
 		xxRight := fg.CartesianXToScreen(x)
-		DrawVerticalLine(img, xxRight, yy0-fg.NotchLength, yy0+fg.NotchLength, color)
+		DrawVerticalLine(img, xxRight, yy0-fg.NotchLength, yy0+fg.NotchLength, c)
 
 		xxLeft := fg.CartesianXToScreen(-x)
-		DrawVerticalLine(img, xxLeft, yy0-fg.NotchLength, yy0+fg.NotchLength, color)
+		DrawVerticalLine(img, xxLeft, yy0-fg.NotchLength, yy0+fg.NotchLength, c)
 	}
 
 	for y := fg.YAxeStepLength; y < math.Max(math.Abs(fg.YMin), math.Abs(fg.YMax)); y += fg.YAxeStepLength {
 		yyUp := fg.CartesianYToScreen(y)
-		DrawHorizontalLine(img, yyUp, xx0-fg.NotchLength, xx0+fg.NotchLength, color)
+		DrawHorizontalLine(img, yyUp, xx0-fg.NotchLength, xx0+fg.NotchLength, c)
 
 		yyDown := fg.CartesianYToScreen(-y)
-		DrawHorizontalLine(img, yyDown, xx0-fg.NotchLength, xx0+fg.NotchLength, color)
+		DrawHorizontalLine(img, yyDown, xx0-fg.NotchLength, xx0+fg.NotchLength, c)
 	}
 }
