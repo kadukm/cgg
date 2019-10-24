@@ -18,6 +18,14 @@ type Point struct {
 	XX, YY int
 }
 
+func InitIntSlice(count int, value int) []int {
+	res := make([]int, count, count)
+	for i := 0; i < count; i++ {
+		res[i] = value
+	}
+	return res
+}
+
 // Rotation returns z-coordinate of vector-product of (p1, p2) * (p2, p3)
 func Rotation(p1, p2, p3 Point) int {
 	return (p2.XX-p1.XX)*(p3.YY-p2.YY) - (p2.YY-p1.YY)*(p3.XX-p2.XX)
@@ -48,8 +56,8 @@ func Length(p1, p2 Point) float64 {
 
 // PointInsideImage returns true when point (xx, yy) is inside img
 func PointInsideImage(img image.Image, xx, yy int) bool {
-	return (img.Bounds().Min.X <= xx && xx <= img.Bounds().Max.X &&
-		img.Bounds().Min.Y <= yy && yy <= img.Bounds().Max.Y)
+	return img.Bounds().Min.X <= xx && xx <= img.Bounds().Max.X &&
+		img.Bounds().Min.Y <= yy && yy <= img.Bounds().Max.Y
 }
 
 // SavePNG saves img in PNG format with given filename

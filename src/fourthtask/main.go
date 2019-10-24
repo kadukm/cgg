@@ -16,14 +16,15 @@ const (
 	width  = 1000
 	height = 600
 
-	xLinesCount = 50
-	stepsCount  = width * 2
+	linesCount = 50
+	stepsCount = width * 2
 
 	fileName = "fourthtask.png"
 )
 
 func f(x, y float64) float64 {
 	return math.Cos(x * y)
+	//return x * math.Pow(y, 3) - y * math.Pow(x, 3)
 }
 
 func main() {
@@ -42,7 +43,7 @@ func initFunctionGraph() (fg utility.FunctionGraph3d) {
 	fg.YMin, fg.YMax = c, d
 	fg.Width = width
 	fg.Height = height
-	fg.LinesCount = xLinesCount
+	fg.LinesCount = linesCount
 	fg.StepsCount = stepsCount
 
 	findMinAndMaxProjectionCoordinates(&fg)
@@ -85,10 +86,18 @@ func findMinAndMaxProjectionCoordinates(fg *utility.FunctionGraph3d) {
 func drawFunction(img draw.Image, fg utility.FunctionGraph3d) {
 	bottomColor := color.RGBA{R: 0, G: 200, B: 255, A: 255}
 	topColor := color.RGBA{R: 255, G: 0, B: 155, A: 255}
-	bottom, top := initBottomAndTopArrays(fg)
 
+	prevBottomMax, prevTopMin := drawFunctionMovingByX(img, fg, bottomColor, topColor)
+	drawFunctionMovingByY(img, fg, prevBottomMax, prevTopMin, bottomColor, topColor)
+}
+
+func drawFunctionMovingByX(img draw.Image, fg utility.FunctionGraph3d,
+		bottomColor color.Color, topColor color.Color) ([]int, []int) {
+	bottom := utility.InitIntSlice(fg.Width+1, -1)
+	bottomMax := utility.InitIntSlice(fg.Width+1, fg.Height+1)
+	top := utility.InitIntSlice(fg.Width+1, fg.Height+1)
+	topMin := utility.InitIntSlice(fg.Width+1, -1)
 	for i := 0; i <= fg.LinesCount; i++ {
-		//TODO: remove code repeat
 		x := fg.XMax - (fg.XMax-fg.XMin)*float64(i)/float64(fg.LinesCount)
 		for j := 0; j <= fg.StepsCount; j++ {
 			y := fg.YMax - (fg.YMax-fg.YMin)*float64(j)/float64(fg.StepsCount)
@@ -107,10 +116,23 @@ func drawFunction(img draw.Image, fg utility.FunctionGraph3d) {
 				top[xx] = yy
 				img.Set(xx, yy, topColor)
 			}
+
+			if img.At(xx, yy) == bottomColor {
+				bottomMax[xx] = yy
+			} else if img.At(xx, yy) == topColor {
+				topMin[xx] = yy
+			}
 		}
 	}
 
-	_, top = initBottomAndTopArrays(fg)
+	return bottomMax, topMin
+}
+
+func drawFunctionMovingByY(img draw.Image, fg utility.FunctionGraph3d,
+		prevBottomMax []int, prevTopMin []int,
+		bottomColor color.Color, topColor color.Color) {
+	bottom := utility.InitIntSlice(fg.Width+1, -1)
+	top := utility.InitIntSlice(fg.Width+1, fg.Height+1)
 	for j := 0; j <= fg.LinesCount; j++ {
 		y := fg.YMax - (fg.YMax-fg.YMin)*float64(j)/float64(fg.LinesCount)
 		for i := 0; i <= fg.StepsCount; i++ {
@@ -122,25 +144,14 @@ func drawFunction(img draw.Image, fg utility.FunctionGraph3d) {
 
 			xx := fg.XXProjectionToScreen(xxProjection)
 			yy := fg.YYProjectionToScreen(yyProjection)
-			if yy > bottom[xx] {
+			if yy > bottom[xx] && yy > prevTopMin[xx] {
 				bottom[xx] = yy
 				img.Set(xx, yy, bottomColor)
 			}
-			if yy < top[xx] {
+			if yy < top[xx] && yy < prevBottomMax[xx] {
 				top[xx] = yy
 				img.Set(xx, yy, topColor)
 			}
 		}
 	}
-}
-
-func initBottomAndTopArrays(fg utility.FunctionGraph3d) ([]int, []int) {
-	top := make([]int, fg.Width+1)
-	bottom := make([]int, fg.Width+1)
-	for i := 0; i < fg.Width; i++ {
-		top[i] = fg.Height + 1
-		bottom[i] = -1
-	}
-
-	return bottom, top
 }
