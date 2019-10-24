@@ -63,17 +63,16 @@ func (p Polygon) normalizeIdx(rawIdx int) int {
 func (p Polygon) TryGetNonConvexPointIdx() (int, error) {
 	const startIdx = 0
 	idx1 := startIdx
-	idx2 := idx1 + p.ClockWiseDelta
-	for idx2 != startIdx {
+	for i := 0; i < p.GetPointsCount(); i++ {
+		idx2 := idx1 + p.ClockWiseDelta
 		newPointIdx := idx2 + p.ClockWiseDelta
 		p1 := p.GetPointAt(idx1)
 		p2 := p.GetPointAt(idx2)
 		newPoint := p.GetPointAt(newPointIdx)
 		if Rotation(p1, p2, newPoint) < 0 {
-			return idx2, nil
+			return p.normalizeIdx(idx2), nil
 		}
 		idx1 = idx2
-		idx2 = p.normalizeIdx(idx2 + p.ClockWiseDelta)
 	}
 	return 0, errors.New("can't find non-convex point")
 
