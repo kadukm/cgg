@@ -1,4 +1,4 @@
-## First task
+## Fourth task
 Program draws random continuous function on \[a,b\]×\[c,d\]
 
 ## Example
