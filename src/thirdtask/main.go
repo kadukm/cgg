@@ -17,12 +17,12 @@ const (
 
 func main() {
 	p := getPolygon()
-	triangles := triangulate(p)
 
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 
 	utility.Fill(img, color.White)
-	drawTriangulation(img, triangles, color.Black)
+	drawPolygon(img, p, color.Black)
+	drawTriangulation(img, p, color.RGBA{R: 255, G: 0, B: 0, A: 255})
 
 	utility.SavePNG(img, filename)
 }
@@ -30,76 +30,63 @@ func main() {
 func getPolygon() utility.Polygon {
 	// Clock-wise direction
 	return utility.CreatePolygon([]utility.Point{
-		utility.Point{XX: 100, YY: 100},
-		utility.Point{XX: 300, YY: 200},
-		utility.Point{XX: 400, YY: 100},
-		utility.Point{XX: 500, YY: 300},
-		utility.Point{XX: 700, YY: 150},
-		utility.Point{XX: 800, YY: 300},
-		utility.Point{XX: 900, YY: 100},
-		utility.Point{XX: 900, YY: 500},
-		utility.Point{XX: 100, YY: 500},
-		utility.Point{XX: 800, YY: 400},
-		utility.Point{XX: 700, YY: 300},
-		utility.Point{XX: 400, YY: 400},
-		utility.Point{XX: 100, YY: 400},
-		utility.Point{XX: 200, YY: 300},
+		{XX: 100, YY: 100},
+		{XX: 300, YY: 200},
+		{XX: 400, YY: 100},
+		{XX: 500, YY: 300},
+		{XX: 700, YY: 150},
+		{XX: 800, YY: 300},
+		{XX: 900, YY: 100},
+		{XX: 900, YY: 500},
+		{XX: 100, YY: 500},
+		{XX: 800, YY: 400},
+		{XX: 700, YY: 300},
+		{XX: 400, YY: 400},
+		{XX: 100, YY: 400},
+		{XX: 200, YY: 300},
 	})
-
-	// Counterlock-wise direction
-	// return utility.CreatePolygon([]utility.Point{
-	// 	utility.Point{XX: 100, YY: 500},
-	// 	utility.Point{XX: 900, YY: 500},
-	// 	utility.Point{XX: 500, YY: 400},
-	// 	utility.Point{XX: 900, YY: 100},
-	// 	utility.Point{XX: 100, YY: 100},
-	// })
+	//Counterlock-wise direction
+	//return utility.CreatePolygon([]utility.Point{
+	//	{XX: 100, YY: 500},
+	//	{XX: 900, YY: 500},
+	//	{XX: 500, YY: 400},
+	//	{XX: 900, YY: 100},
+	//	{XX: 100, YY: 100},
+	//})
 }
 
-func triangulate(p utility.Polygon) []utility.Triangle {
+
+func drawPolygon(img draw.Image, p utility.Polygon, c color.Color) {
+	for curIdx := 0; curIdx < p.GetPointsCount(); curIdx++ {
+		curPoint := p.GetPointAt(curIdx)
+		nextPoint := p.GetPointAt(curIdx + 1)
+		utility.DrawLine(img, curPoint.XX, curPoint.YY, nextPoint.XX, nextPoint.YY, c)
+	}
+}
+
+func drawTriangulation(img draw.Image, p utility.Polygon, c color.Color) {
 	nonConvexPointIdx, err := p.TryGetNonConvexPointIdx()
 	if err != nil {
-		return triangulateConvexPolygon(p)
+		drawTriangulationOfConvexPolygon(img, p, c)
+		return
 	}
 
-	goodPointIdx := p.GetGoodPointIdx(nonConvexPointIdx)
-	p1, p2 := p.DivideBySegment(nonConvexPointIdx, goodPointIdx)
-	triangles1 := triangulate(p1)
-	triangles2 := triangulate(p2)
+	dividingPointIdx := p.GetDividingPointIdx(nonConvexPointIdx)
 
-	return append(triangles1, triangles2...)
+	nonConvexPoint := p.GetPointAt(nonConvexPointIdx)
+	dividingPoint := p.GetPointAt(dividingPointIdx)
+	utility.DrawLine(img, nonConvexPoint.XX, nonConvexPoint.YY, dividingPoint.XX, dividingPoint.YY, c)
+
+	p1, p2 := p.DivideBySegment(nonConvexPointIdx, dividingPointIdx)
+	drawTriangulation(img, p1, c)
+	drawTriangulation(img, p2, c)
 }
 
-func triangulateConvexPolygon(p utility.Polygon) []utility.Triangle {
-	trianglesCount := p.GetPointsCount() - 2
-	res := make([]utility.Triangle, 0, trianglesCount)
+func drawTriangulationOfConvexPolygon(img draw.Image, p utility.Polygon, c color.Color) {
 	rootIdx := 0
 	rootPoint := p.GetPointAt(rootIdx)
-	curIdx := rootIdx + 1
-	for curIdx < p.GetPointsCount()-1 {
-		nextIdx := curIdx + 1
+	for curIdx := rootIdx + 2; curIdx < p.GetPointsCount()-1; curIdx++ {
 		curPoint := p.GetPointAt(curIdx)
-		nextPoint := p.GetPointAt(nextIdx)
-		newTriangle := utility.Triangle{[3]utility.Point{rootPoint, curPoint, nextPoint}}
-		res = append(res, newTriangle)
-
-		curIdx = nextIdx
+		utility.DrawLine(img, rootPoint.XX, rootPoint.YY, curPoint.XX, curPoint.YY, c)
 	}
-	return res
-}
-
-func drawTriangulation(img draw.Image, ts []utility.Triangle, c color.Color) {
-	// TODO: don't draw the same lines of different triangles twice
-	for _, triangle := range ts {
-		drawTriangle(img, triangle, c)
-	}
-}
-
-func drawTriangle(img draw.Image, t utility.Triangle, c color.Color) {
-	p0 := t.Points[0]
-	p1 := t.Points[1]
-	p2 := t.Points[2]
-	utility.DrawLine(img, p0.XX, p0.YY, p1.XX, p1.YY, c)
-	utility.DrawLine(img, p1.XX, p1.YY, p2.XX, p2.YY, c)
-	utility.DrawLine(img, p2.XX, p2.YY, p0.XX, p0.YY, c)
 }

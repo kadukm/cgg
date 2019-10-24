@@ -78,7 +78,7 @@ func (p Polygon) TryGetNonConvexPointIdx() (int, error) {
 
 }
 
-func (p Polygon) GetGoodPointIdx(nonConvexPointIdx int) (res int) {
+func (p Polygon) GetDividingPointIdx(nonConvexPointIdx int) int {
 	for pointIdx := 0; pointIdx < len(p.points); pointIdx++ {
 		if p.arePointsNeighbors(nonConvexPointIdx, pointIdx) {
 			continue
@@ -86,11 +86,10 @@ func (p Polygon) GetGoodPointIdx(nonConvexPointIdx int) (res int) {
 		//TODO: I can handle ends of intersected segments, but now I won't do it
 		if p.isSegmentStartsInside(nonConvexPointIdx, pointIdx) &&
 			p.isSegmentInside(nonConvexPointIdx, pointIdx) {
-			res = pointIdx
-			break
+			return pointIdx
 		}
 	}
-	return
+	panic("impossible situation")
 }
 
 func (p Polygon) arePointsNeighbors(idx1, idx2 int) bool {
@@ -123,7 +122,6 @@ func (p Polygon) GetSubPolygon(idxFrom, idxTo int) Polygon {
 		curIdx = p.normalizeIdx(curIdx + 1)
 	}
 	points = append(points, p.GetPointAt(curIdx))
-	// return CreatePolygon(points)
 	return Polygon{p.ClockWiseDelta, points}
 }
 
