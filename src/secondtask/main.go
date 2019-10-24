@@ -61,7 +61,7 @@ func initParabolaOptions(fg utility.FunctionGraph2d) (po parabolaOptions) {
 }
 
 func drawFunction(img draw.Image, fg utility.FunctionGraph2d, po parabolaOptions) {
-	drawingColor := color.RGBA{153, 12, 12, 255}
+	drawingColor := color.RGBA{R: 153, G: 12, B: 12, A: 255}
 
 	img.Set(po.vertex.xx, po.vertex.yy, drawingColor)
 

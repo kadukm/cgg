@@ -71,7 +71,7 @@ func findMinMaxY(fg *utility.FunctionGraph2d) {
 }
 
 func drawFunction(img draw.Image, fg utility.FunctionGraph2d) {
-	drawingColor := color.RGBA{153, 12, 12, 255}
+	drawingColor := color.RGBA{R: 153, G: 12, B: 12, A: 255}
 
 	prevYY := fg.CartesianYToScreen(f(a))
 	prevXX := 0
