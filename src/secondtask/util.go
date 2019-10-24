@@ -6,7 +6,7 @@ import (
 	"github.com/kadukm/cgg/src/utility"
 )
 
-//TODO: use parabolaOptions separately from utility.FunctionGraph
+//TODO: use parabolaOptions separately from utility.FunctionGraph2d
 
 type parabolaOptions struct {
 	p          float64
@@ -24,7 +24,7 @@ func (po parabolaOptions) getErrorSizeFor(p point) float64 {
 func getNearestNotUsedPoint(
 	p point,
 	visited map[utility.Point]bool,
-	fg utility.FunctionGraph,
+	fg utility.FunctionGraph2d,
 	po parabolaOptions,
 ) (res point) {
 	minErrorSize := math.MaxFloat64

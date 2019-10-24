@@ -71,7 +71,7 @@ func DrawLine(img draw.Image, xx1, yy1, xx2, yy2 int, color color.Color) {
 }
 
 //DrawAxes draws axes with branches for fg
-func DrawAxes(img draw.Image, fg FunctionGraph, c color.Color) {
+func DrawAxes(img draw.Image, fg FunctionGraph2d, c color.Color) {
 	xx0, yy0 := fg.CartesianXToScreen(0), fg.CartesianYToScreen(0)
 
 	DrawVerticalLine(img, xx0, 0, fg.Height, c)

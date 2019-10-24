@@ -39,7 +39,7 @@ func main() {
 	utility.SavePNG(img, fileName)
 }
 
-func initFunctionGraph() (fg utility.FunctionGraph) {
+func initFunctionGraph() (fg utility.FunctionGraph2d) {
 	fg.XMin, fg.XMax = a, b
 	fg.Width = width
 	fg.Height = height
@@ -53,7 +53,7 @@ func initFunctionGraph() (fg utility.FunctionGraph) {
 	return
 }
 
-func findMinMaxY(fg *utility.FunctionGraph) {
+func findMinMaxY(fg *utility.FunctionGraph2d) {
 	tempValue := f(a)
 	fg.YMin = tempValue
 	fg.YMax = tempValue
@@ -70,7 +70,7 @@ func findMinMaxY(fg *utility.FunctionGraph) {
 	}
 }
 
-func drawFunction(img draw.Image, fg utility.FunctionGraph) {
+func drawFunction(img draw.Image, fg utility.FunctionGraph2d) {
 	drawingColor := color.RGBA{153, 12, 12, 255}
 
 	prevYY := fg.CartesianYToScreen(f(a))
