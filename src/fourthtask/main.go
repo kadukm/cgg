@@ -16,8 +16,8 @@ const (
 	width  = 1000
 	height = 600
 
-	linesCount = 50
-	stepsCount = width * 2
+	linesCount       = 50
+	stepsByLineCount = width * 2
 
 	fileName = "fourthtask.png"
 )
@@ -41,10 +41,10 @@ func main() {
 func initFunctionGraph() (fg utility.FunctionGraph3d) {
 	fg.XMin, fg.XMax = x1, x2
 	fg.YMin, fg.YMax = y1, y2
-	fg.Width = width
-	fg.Height = height
+	fg.Width = width - 1
+	fg.Height = height - 1
 	fg.LinesCount = linesCount
-	fg.StepsCount = stepsCount
+	fg.StepsByLineCount = stepsByLineCount
 
 	findMinAndMaxProjectionCoordinates(&fg)
 
@@ -58,8 +58,8 @@ func findMinAndMaxProjectionCoordinates(fg *utility.FunctionGraph3d) {
 	yyProjectionMax := -math.MaxFloat64
 	for i := 0; i <= fg.LinesCount; i++ {
 		x := fg.XMax - (fg.XMax-fg.XMin)*float64(i)/float64(fg.LinesCount)
-		for j := 0; j <= fg.StepsCount; j++ {
-			y := fg.YMax - (fg.YMax-fg.YMin)*float64(j)/float64(fg.StepsCount)
+		for j := 0; j <= fg.StepsByLineCount; j++ {
+			y := fg.YMax - (fg.YMax-fg.YMin)*float64(j)/float64(fg.StepsByLineCount)
 			z := f(x, y)
 
 			xxProjection := fg.GetXXProjection(x, y, z)
@@ -87,71 +87,88 @@ func drawFunction(img draw.Image, fg utility.FunctionGraph3d) {
 	bottomColor := color.RGBA{R: 0, G: 200, B: 255, A: 255}
 	topColor := color.RGBA{R: 255, G: 0, B: 155, A: 255}
 
-	prevBottomMax, prevTopMin := drawFunctionMovingByX(img, fg, bottomColor, topColor)
-	drawFunctionMovingByY(img, fg, prevBottomMax, prevTopMin, bottomColor, topColor)
+	initTop := drawFirstTopLines(img, fg, topColor)
+	drawFunctionMovingByX(img, fg, initTop, bottomColor, topColor)
+	drawFunctionMovingByY(img, fg, initTop, bottomColor, topColor)
 }
 
-func drawFunctionMovingByX(img draw.Image, fg utility.FunctionGraph3d,
-		bottomColor color.Color, topColor color.Color) ([]int, []int) {
-	bottom := utility.InitIntSlice(fg.Width+1, -1)
-	bottomMax := utility.InitIntSlice(fg.Width+1, fg.Height+1)
-	top := utility.InitIntSlice(fg.Width+1, fg.Height+1)
-	topMin := utility.InitIntSlice(fg.Width+1, -1)
-	for i := 0; i <= fg.LinesCount; i++ {
-		x := fg.XMax - (fg.XMax-fg.XMin)*float64(i)/float64(fg.LinesCount)
-		for j := 0; j <= fg.StepsCount; j++ {
-			y := fg.YMax - (fg.YMax-fg.YMin)*float64(j)/float64(fg.StepsCount)
-			z := f(x, y)
+func drawFirstTopLines(img draw.Image, fg utility.FunctionGraph3d, topColor color.Color) []int {
+	top := utility.InitIntSlice(fg.Width+1, fg.Height)
+	topInitialized := make([]bool, fg.Width+1)
+	drawFirstXY := func(x, y float64) {
+		z := f(x, y)
 
-			xxProjection := fg.GetXXProjection(x, y, z)
-			yyProjection := fg.GetYYProjection(x, y, z)
+		xxProjection := fg.GetXXProjection(x, y, z)
+		yyProjection := fg.GetYYProjection(x, y, z)
 
-			xx := fg.XXProjectionToScreen(xxProjection)
-			yy := fg.YYProjectionToScreen(yyProjection)
-			if yy > bottom[xx] {
-				bottom[xx] = yy
-				img.Set(xx, yy, bottomColor)
-			}
-			if yy < top[xx] {
-				top[xx] = yy
-				img.Set(xx, yy, topColor)
-			}
-
-			if yy < bottomMax[xx] && img.At(xx, yy) == bottomColor {
-				bottomMax[xx] = yy
-			} else if yy > topMin[xx] && img.At(xx, yy) == topColor {
-				topMin[xx] = yy
-			}
+		xx := fg.XXProjectionToScreen(xxProjection)
+		yy := fg.YYProjectionToScreen(yyProjection)
+		img.Set(xx, yy, topColor)
+		if !topInitialized[xx] || yy > top[xx] {
+			topInitialized[xx] = true
+			top[xx] = yy
 		}
 	}
+	x := fg.XMax
+	for j := 0; j <= fg.StepsByLineCount; j++ {
+		y := fg.YMax - (fg.YMax-fg.YMin)*float64(j)/float64(fg.StepsByLineCount)
+		drawFirstXY(x, y)
+	}
 
-	return bottomMax, topMin
+	y := fg.YMax
+	for i := 0; i <= fg.StepsByLineCount; i++ {
+		x := fg.XMax - (fg.XMax-fg.XMin)*float64(i)/float64(fg.StepsByLineCount)
+		drawFirstXY(x, y)
+	}
+
+	return top
 }
 
-func drawFunctionMovingByY(img draw.Image, fg utility.FunctionGraph3d,
-		prevBottomMax []int, prevTopMin []int,
+func drawFunctionMovingByX(img draw.Image, fg utility.FunctionGraph3d, initTop []int,
 		bottomColor color.Color, topColor color.Color) {
-	bottom := utility.InitIntSlice(fg.Width+1, -1)
-	top := utility.InitIntSlice(fg.Width+1, fg.Height+1)
-	for j := 0; j <= fg.LinesCount; j++ {
-		y := fg.YMax - (fg.YMax-fg.YMin)*float64(j)/float64(fg.LinesCount)
-		for i := 0; i <= fg.StepsCount; i++ {
-			x := fg.XMax - (fg.XMax-fg.XMin)*float64(i)/float64(fg.StepsCount)
-			z := f(x, y)
-
-			xxProjection := fg.GetXXProjection(x, y, z)
-			yyProjection := fg.GetYYProjection(x, y, z)
-
-			xx := fg.XXProjectionToScreen(xxProjection)
-			yy := fg.YYProjectionToScreen(yyProjection)
-			if yy > bottom[xx] && yy > prevTopMin[xx] {
-				bottom[xx] = yy
-				img.Set(xx, yy, bottomColor)
-			}
-			if yy < top[xx] && yy < prevBottomMax[xx] {
-				top[xx] = yy
-				img.Set(xx, yy, topColor)
-			}
+	bottom := make([]int, fg.Width+1)
+	top := make([]int, fg.Width+1)
+	copy(bottom, initTop)
+	copy(top, initTop)
+	for i := 1; i <= fg.LinesCount; i++ {
+		x := fg.XMax - (fg.XMax-fg.XMin)*float64(i)/float64(fg.LinesCount)
+		for j := 0; j <= fg.StepsByLineCount; j++ {
+			y := fg.YMax - (fg.YMax-fg.YMin)*float64(j)/float64(fg.StepsByLineCount)
+			drawXY(img, fg, x, y, bottom, top, bottomColor, topColor)
 		}
+	}
+}
+
+func drawFunctionMovingByY(img draw.Image, fg utility.FunctionGraph3d, initTop []int,
+		bottomColor color.Color, topColor color.Color) {
+	bottom := make([]int, fg.Width+1)
+	top := make([]int, fg.Width+1)
+	copy(bottom, initTop)
+	copy(top, initTop)
+	for j := 1; j <= fg.LinesCount; j++ {
+		y := fg.YMax - (fg.YMax-fg.YMin)*float64(j)/float64(fg.LinesCount)
+		for i := 0; i <= fg.StepsByLineCount; i++ {
+			x := fg.XMax - (fg.XMax-fg.XMin)*float64(i)/float64(fg.StepsByLineCount)
+			drawXY(img, fg, x, y, bottom, top, bottomColor, topColor)
+		}
+	}
+}
+
+func drawXY(img draw.Image, fg utility.FunctionGraph3d, x, y float64,
+		bottom, top []int, bottomColor, topColor color.Color) {
+	z := f(x, y)
+
+	xxProjection := fg.GetXXProjection(x, y, z)
+	yyProjection := fg.GetYYProjection(x, y, z)
+
+	xx := fg.XXProjectionToScreen(xxProjection)
+	yy := fg.YYProjectionToScreen(yyProjection)
+	if yy > bottom[xx] {
+		bottom[xx] = yy
+		img.Set(xx, yy, bottomColor)
+	}
+	if yy < top[xx] {
+		top[xx] = yy
+		img.Set(xx, yy, topColor)
 	}
 }

@@ -14,11 +14,21 @@ type FunctionGraph3d struct {
 	Width  int
 	Height int
 
-	LinesCount int
-	StepsCount int
+	LinesCount       int
+	StepsByLineCount int
 
 	XXProjectionMin, XXProjectionMax float64
 	YYProjectionMin, YYProjectionMax float64
+}
+
+func (fg FunctionGraph3d) GetXX(x, y, z float64) int {
+	xxProjection := fg.GetXXProjection(x, y, z)
+	return fg.XXProjectionToScreen(xxProjection)
+}
+
+func (fg FunctionGraph3d) GetYY(x, y, z float64) int {
+	yyProjection := fg.GetYYProjection(x, y, z)
+	return fg.YYProjectionToScreen(yyProjection)
 }
 
 func (fg FunctionGraph3d) XXProjectionToScreen(xxProjection float64) int {
