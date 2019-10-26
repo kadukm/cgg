@@ -83,7 +83,6 @@ func (p Polygon) GetDividingPointIdx(nonConvexPointIdx int) int {
 		if p.arePointsNeighbors(nonConvexPointIdx, pointIdx) {
 			continue
 		}
-		//TODO: I can handle ends of intersected segments, but now I won't do it
 		if p.isSegmentStartsInside(nonConvexPointIdx, pointIdx) &&
 			p.isSegmentInside(nonConvexPointIdx, pointIdx) {
 			return pointIdx
