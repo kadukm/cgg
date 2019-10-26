@@ -1,6 +1,8 @@
 package main
 
-import "github.com/kadukm/cgg/src/utility"
+import (
+	"github.com/kadukm/cgg/src/utility"
+)
 
 // These values allow transfrom points without redundant recount
 const (

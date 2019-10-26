@@ -55,7 +55,6 @@ func getPolygon() utility.Polygon {
 	//})
 }
 
-
 func drawPolygon(img draw.Image, p utility.Polygon, c color.Color) {
 	for curIdx := 0; curIdx < p.GetPointsCount(); curIdx++ {
 		curPoint := p.GetPointAt(curIdx)
