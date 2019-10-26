@@ -1,5 +1,5 @@
 ## First task
-Program draws triangulation of random polygon.
+Program draws triangulation of random polygon using recursive triangulation algorithm.
 
-## Example
+### Example
 ![thirdtask.png](thirdtask.png)

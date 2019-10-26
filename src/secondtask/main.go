@@ -11,8 +11,8 @@ import (
 const (
 	a, b, c float64 = -6, 8, -1
 
-	xMin, xMax float64 = -10, 10
-	yMin, yMax float64 = -6, 6
+	x1, x2 float64 = -10, 10
+	y1, y2 float64 = -6, 6
 
 	width  = 1000
 	height = 600
@@ -39,8 +39,8 @@ func main() {
 }
 
 func initFunctionGraph() (fg utility.FunctionGraph2d) {
-	fg.XMin, fg.XMax = xMin, xMax
-	fg.YMin, fg.YMax = yMin, yMax
+	fg.XMin, fg.XMax = x1, x2
+	fg.YMin, fg.YMax = y1, y2
 	fg.Width = width
 	fg.Height = height
 
