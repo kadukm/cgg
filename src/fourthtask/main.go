@@ -117,9 +117,9 @@ func drawFunctionMovingByX(img draw.Image, fg utility.FunctionGraph3d,
 				img.Set(xx, yy, topColor)
 			}
 
-			if img.At(xx, yy) == bottomColor {
+			if yy < bottomMax[xx] && img.At(xx, yy) == bottomColor {
 				bottomMax[xx] = yy
-			} else if img.At(xx, yy) == topColor {
+			} else if yy > topMin[xx] && img.At(xx, yy) == topColor {
 				topMin[xx] = yy
 			}
 		}
