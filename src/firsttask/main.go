@@ -41,8 +41,8 @@ func main() {
 
 func initFunctionGraph() (fg utility.FunctionGraph2d) {
 	fg.XMin, fg.XMax = a, b
-	fg.Width = width
-	fg.Height = height
+	fg.Width = width - 1
+	fg.Height = height - 1
 
 	findMinMaxY(&fg)
 
