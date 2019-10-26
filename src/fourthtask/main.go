@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	a, b float64 = -3, 3
-	c, d float64 = -3, 3
+	x1, x2 float64 = -3, 3
+	y1, y2 float64 = -3, 3
 
 	width  = 1000
 	height = 600
@@ -39,8 +39,8 @@ func main() {
 }
 
 func initFunctionGraph() (fg utility.FunctionGraph3d) {
-	fg.XMin, fg.XMax = a, b
-	fg.YMin, fg.YMax = c, d
+	fg.XMin, fg.XMax = x1, x2
+	fg.YMin, fg.YMax = y1, y2
 	fg.Width = width
 	fg.Height = height
 	fg.LinesCount = linesCount
