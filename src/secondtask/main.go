@@ -38,7 +38,7 @@ func main() {
 	utility.SavePNG(img, filename)
 }
 
-func initFunctionGraph() (fg utility.FunctionGraph2d) {
+func initFunctionGraph() (fg utility.FunctionGraph2D) {
 	fg.XMin, fg.XMax = x1, x2
 	fg.YMin, fg.YMax = y1, y2
 	fg.Width = width
@@ -51,7 +51,7 @@ func initFunctionGraph() (fg utility.FunctionGraph2d) {
 	return
 }
 
-func initParabolaOptions(fg utility.FunctionGraph2d) (po parabolaOptions) {
+func initParabolaOptions(fg utility.FunctionGraph2D) (po parabolaOptions) {
 	po.p = (a + b) / (2 * c)
 	po.focus = pointFromTransformed(fg, po.p/2, 0)
 	po.directrixU = -po.p / 2
@@ -60,7 +60,7 @@ func initParabolaOptions(fg utility.FunctionGraph2d) (po parabolaOptions) {
 	return
 }
 
-func drawFunction(img draw.Image, fg utility.FunctionGraph2d, po parabolaOptions) {
+func drawFunction(img draw.Image, fg utility.FunctionGraph2D, po parabolaOptions) {
 	drawingColor := color.RGBA{R: 153, G: 12, B: 12, A: 255}
 
 	img.Set(po.vertex.xx, po.vertex.yy, drawingColor)
@@ -74,7 +74,7 @@ func drawFunction(img draw.Image, fg utility.FunctionGraph2d, po parabolaOptions
 
 func drawParabolaBranch(
 	img draw.Image,
-	fg utility.FunctionGraph2d,
+	fg utility.FunctionGraph2D,
 	po parabolaOptions,
 	visited map[utility.Point]bool,
 	drawingColor color.Color,

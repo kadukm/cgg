@@ -22,7 +22,7 @@ func (po parabolaOptions) getErrorSizeFor(p point) float64 {
 func getNearestNotUsedPoint(
 	p point,
 	visited map[utility.Point]bool,
-	fg utility.FunctionGraph2d,
+	fg utility.FunctionGraph2D,
 	po parabolaOptions,
 ) (res point) {
 	minErrorSize := math.MaxFloat64
