@@ -38,7 +38,7 @@ func main() {
 	utility.SavePNG(img, fileName)
 }
 
-func initFunctionGraph() (fg utility.FunctionGraph3d) {
+func initFunctionGraph() (fg utility.FunctionGraph3D) {
 	fg.XMin, fg.XMax = x1, x2
 	fg.YMin, fg.YMax = y1, y2
 	fg.Width = width - 1
@@ -51,7 +51,7 @@ func initFunctionGraph() (fg utility.FunctionGraph3d) {
 	return
 }
 
-func findMinAndMaxProjectionCoordinates(fg *utility.FunctionGraph3d) {
+func findMinAndMaxProjectionCoordinates(fg *utility.FunctionGraph3D) {
 	xxProjectionMin := math.MaxFloat64
 	xxProjectionMax := -math.MaxFloat64
 	yyProjectionMin := math.MaxFloat64
@@ -83,7 +83,7 @@ func findMinAndMaxProjectionCoordinates(fg *utility.FunctionGraph3d) {
 	fg.YYProjectionMin, fg.YYProjectionMax = yyProjectionMin, yyProjectionMax
 }
 
-func drawFunction(img draw.Image, fg utility.FunctionGraph3d) {
+func drawFunction(img draw.Image, fg utility.FunctionGraph3D) {
 	bottomColor := color.RGBA{R: 0, G: 200, B: 255, A: 255}
 	topColor := color.RGBA{R: 255, G: 0, B: 155, A: 255}
 
@@ -92,7 +92,7 @@ func drawFunction(img draw.Image, fg utility.FunctionGraph3d) {
 	drawFunctionMovingByY(img, fg, initTop, bottomColor, topColor)
 }
 
-func drawFirstTopLines(img draw.Image, fg utility.FunctionGraph3d, topColor color.Color) []int {
+func drawFirstTopLines(img draw.Image, fg utility.FunctionGraph3D, topColor color.Color) []int {
 	top := utility.InitIntSlice(fg.Width+1, fg.Height)
 	topInitialized := make([]bool, fg.Width+1)
 	drawFirstXY := func(x, y float64) {
@@ -124,7 +124,7 @@ func drawFirstTopLines(img draw.Image, fg utility.FunctionGraph3d, topColor colo
 	return top
 }
 
-func drawFunctionMovingByX(img draw.Image, fg utility.FunctionGraph3d, initTop []int,
+func drawFunctionMovingByX(img draw.Image, fg utility.FunctionGraph3D, initTop []int,
 		bottomColor color.Color, topColor color.Color) {
 	bottom := make([]int, fg.Width+1)
 	top := make([]int, fg.Width+1)
@@ -139,7 +139,7 @@ func drawFunctionMovingByX(img draw.Image, fg utility.FunctionGraph3d, initTop [
 	}
 }
 
-func drawFunctionMovingByY(img draw.Image, fg utility.FunctionGraph3d, initTop []int,
+func drawFunctionMovingByY(img draw.Image, fg utility.FunctionGraph3D, initTop []int,
 		bottomColor color.Color, topColor color.Color) {
 	bottom := make([]int, fg.Width+1)
 	top := make([]int, fg.Width+1)
@@ -154,7 +154,7 @@ func drawFunctionMovingByY(img draw.Image, fg utility.FunctionGraph3d, initTop [
 	}
 }
 
-func drawXY(img draw.Image, fg utility.FunctionGraph3d, x, y float64,
+func drawXY(img draw.Image, fg utility.FunctionGraph3D, x, y float64,
 		bottom, top []int, bottomColor, topColor color.Color) {
 	z := f(x, y)
 	xx, yy := fg.GetXX(x, y, z), fg.GetYY(x, y, z)
