@@ -157,12 +157,7 @@ func drawFunctionMovingByY(img draw.Image, fg utility.FunctionGraph3d, initTop [
 func drawXY(img draw.Image, fg utility.FunctionGraph3d, x, y float64,
 		bottom, top []int, bottomColor, topColor color.Color) {
 	z := f(x, y)
-
-	xxProjection := fg.GetXXProjection(x, y, z)
-	yyProjection := fg.GetYYProjection(x, y, z)
-
-	xx := fg.XXProjectionToScreen(xxProjection)
-	yy := fg.YYProjectionToScreen(yyProjection)
+	xx, yy := fg.GetXX(x, y, z), fg.GetYY(x, y, z)
 	if yy > bottom[xx] {
 		bottom[xx] = yy
 		img.Set(xx, yy, bottomColor)
